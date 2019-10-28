@@ -6,8 +6,9 @@ import (
 	// "github.com/go-openapi/swag"
 	"github.com/go-openapi/loads"
 	"github.com/scraly/http-go-server/pkg/swagger/server/restapi"
+
 	// "github.com/scraly/http-go-server/pkg/swagger/server/models"
-	// "github.com/scraly/http-go-server/pkg/swagger/server/restapi/operations"
+	"github.com/scraly/http-go-server/pkg/swagger/server/restapi/operations"
 )
 
 // func main() {
@@ -31,7 +32,7 @@ func main() {
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
-	server.Port = "8080"
+	server.Port = 8080
 
 	// Implement the handler functionality.
 	// As all we need to do is give an implementation to the interface
