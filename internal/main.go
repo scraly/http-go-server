@@ -3,12 +3,10 @@ package main
 import (
 	"log"
 
-	// "github.com/go-openapi/swag"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/scraly/http-go-server/pkg/swagger/server/restapi"
 
-	// "github.com/scraly/http-go-server/pkg/swagger/server/models"
 	"github.com/scraly/http-go-server/pkg/swagger/server/restapi/operations"
 )
 
@@ -31,7 +29,13 @@ func main() {
 
 	api := operations.NewHelloAPI(swaggerSpec)
 	server := restapi.NewServer(api)
-	defer server.Shutdown()
+
+	defer func() {
+		if err := server.Shutdown(); err != nil {
+			// error handle
+			log.Fatalln(err)
+		}
+	}()
 
 	server.Port = 8080
 
@@ -47,8 +51,7 @@ func main() {
 			return operations.NewGetHelloUserOK().WithPayload("Hello " + user.User + "!")
 		})
 
-	// Start listening using having the handlers and port
-	// already set up.
+	// Start server which listening
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}

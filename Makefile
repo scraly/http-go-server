@@ -15,26 +15,18 @@ pkgDirs = $(shell GOFLAGS=-mod=vendor $(GO) list -f {{.Dir}} ./... | grep -vE -e
 DIR_OUT:=/tmp
 
 GOLANGCI:=$(shell command -v golangci-lint 2> /dev/null)
-GOCOV:=$(shell command -v gocov 2> /dev/null)
 WWHRD:=$(shell command -v wwhrd 2> /dev/null)
-GOCLOC:=$(shell command -v gocloc 2> /dev/null)
-DATABASES := bolt
 
 GO_EXCLUDE := /vendor/|.pb.go|.gen.go
 GO_FILES_CMD := find . -name '*.go' | grep -v -E '$(GO_EXCLUDE)'
 
-NAME := map
-
 #-------------------------
 # Final targets
 #-------------------------
-.PHONY: dev production
+.PHONY: dev
 
 ## Execute development pipeline
 dev: license generate format lint.fast build
-
-## Execute production pipeline
-production: check test build pack
 
 #-------------------------
 # Download libraries and tools
@@ -47,13 +39,6 @@ get.tools:
 	go get -u github.com/frapposelli/wwhrd
  	# linter
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-	# test
-	go get -u github.com/onsi/gomega/...
-	go get -u github.com/smartystreets/goconvey
-	go get -u github.com/vektra/mockery/.../
-	go get -u github.com/jstemmer/go-junit-report
-  # swagger
-	go get -u github.com/go-swagger/go-swagger/cmd/swagger
 
 #-------------------------
 # Code generation
@@ -64,21 +49,6 @@ get.tools:
 generate:
 	@echo "==> generating go code"
 	GOFLAGS=-mod=vendor $(GO) generate $(pkgs)
-
-#-------------------------
-# Unit tests
-#-------------------------
-.PHONY: test test.report test.coverage
-
-## Run tests
-test:
-	@echo "==> running tests"
-	GOFLAGS=-mod=vendor $(GO) test -short -race -cover $(pkgs)
-
-## Run tests report
-test.report:
-	@echo "==> running tests with coverage report"
-	GOFLAGS=-mod=vendor $(GO) test -short -race -coverprofile=coverage.out -v $(pkgs) > tests.txt
 
 #-------------------------
 # Checks
@@ -104,14 +74,6 @@ endif
 	@echo "==> license check"
 	wwhrd check
 
-## Export license usage as CSV file
-license.csv:
-ifndef WWHRD
-	$(error "Please install wwhrd! make get-tools")
-endif
-	@echo "==> license check (csv)"
-	wwhrd list 2>&1 | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | cut -c 58- | awk -F"[ =]" '{print $2 ";" $4;}' | sort > licence.csv
-
 ## Launch linter
 lint.fast:
 ifndef GOLANGCI
@@ -127,21 +89,6 @@ ifndef GOLANGCI
 endif
 	@echo "==> linters (slow)"
 	@golangci-lint run -v $(pkgDirs)
-
-## Execute linter and save result file
-lint.report:
-ifndef GOLANGCI
-	$(error "Please install golangci! make get-tools")
-endif
-	@golangci-lint run -v $(pkgDirs) > golangci-report.txt
-
-## Output project lines of code table
-stats.loc:
-ifndef GOCLOC
-	$(error "Please install gocloc ! go get -u github.com/hhatto/gocloc/cmd/gocloc ")
-endif
-	@date
-	@gocloc --not-match-d="vendor|node_modules" .
 
 #-------------------------
 # Build artefacts
