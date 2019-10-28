@@ -1,0 +1,22 @@
+---
+blacklist:
+  - AGPL-3.0
+  - GPL-2.0
+  - GPL-3.0
+  - CDDL-1.0
+
+whitelist:
+  - Apache-2.0
+  - MIT
+  - NewBSD
+  - FreeBSD
+  - LGPL-2.1
+  - LGPL-3.0
+  - ISC
+  - MPL-2.0
+  - EPL-1.0
+  - Unlicense
+
+# exceptions:
+#   - github.com/davecgh/go-spew/spew/... # ISC License misrecognized
+#   - github.com/dchest/uniuri # https://creativecommons.org/publicdomain/zero/1.0/
