@@ -42,6 +42,8 @@ Swagger doc: [http-go-server](https://github.com/scraly/http-go-server/doc/index
 | /hello/{name}							 | 8080 | GET       |  Returns message with {name} provided in the query							    |						    |
 
 
+`$ curl localhost:8080/hello/aurelie`
+
 ## Generate swagger files
 
 After editing `pkg/swagger/swagger.yml` file you need to generate swagger files again:
