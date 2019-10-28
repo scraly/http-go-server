@@ -78,8 +78,6 @@ linters-settings:
     min-occurrences: 3
   misspell:
     locale: US
-    ignore-words:
-      - teh
   lll:
     line-length: 140
     tab-width: 1
