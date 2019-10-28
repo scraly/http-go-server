@@ -1,5 +1,4 @@
 GO   := go
-GO_BUILD_IMAGE?=rb00491vmx.rb.de.conti.de:5000/cloud/continental/ehorizon/builds/docker/golang/tools:1.11.2
 
 DIRS_TO_CLEAN:=
 FILES_TO_CLEAN:=
@@ -147,27 +146,19 @@ endif
 #-------------------------
 # Build artefacts
 #-------------------------
-.PHONY: build build.map
+.PHONY: build build.http-server-go
 
 ## Build all binaries
-build: build.map
+build: build.http-server-go
 
-## Build map only
-build.map:
-	@./scripts/build.sh map
+## Build http-server-go only
+build.http-server-go:
+	@./scripts/build.sh http-server-go
 
 ## Compress all binaries
 pack:
 	@echo ">> packing all binaries"
 	@upx -7 -qq bin/*
-
-#-------------------------
-# Target: docker
-#-------------------------
-.PHONY: docker
-
-docker:
-	docker build --no-cache --build-arg GO_BUILD_IMAGE=${GO_BUILD_IMAGE} -t ${NAME} .
 
 #-------------------------
 # Target: depend
@@ -207,30 +198,6 @@ clean: clean.go
 clean.go: ; $(info cleaning...)
 	$(eval GO_CLEAN_FLAGS := -i -r)
 	$(GO) clean $(GO_CLEAN_FLAGS)
-
-#-------------------------
-# Target: doc
-#-------------------------
-.PHONY: doc doc.html doc.pdf
-
-## Generate the documentation from asciidoc
-doc: doc.html
-
-doc.html:
-	@echo "==> generating documentation: html"
-	@docker run -it --rm -v `pwd`:/documents/ asciidoctor/docker-asciidoctor asciidoctor -b html5 \
-		-a source-highlighter=highlightjs \
-		-a highlightjsdir=assets/highlightjs \
-		-a highlightjs-theme=github-gist \
-		-a imagesdir=builder/adoc/ \
-		-D /documents/doc/ doc/builder/adoc/index.adoc
-
-doc.pdf:
-	@echo "==> generating documentation: pdf"
-	@docker run -it --rm -v `pwd`:/documents/ asciidoctor/docker-asciidoctor asciidoctor-pdf \
-		-a source-highlighter=pygments \
-		-a pygments-style=manni \
-		-D /documents/doc doc/builder/adoc/index.adoc
 
 #-------------------------
 # Target: help
