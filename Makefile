@@ -96,11 +96,8 @@ endif
 .PHONY: build build.http-server-go
 
 ## Build all binaries
-build: build.http-server-go
-
-## Build http-server-go only
-build.http-server-go:
-	@./scripts/build.sh http-server-go
+build:
+	$(GO) build -o bin/http-go-server internal/main.go
 
 ## Compress all binaries
 pack:
